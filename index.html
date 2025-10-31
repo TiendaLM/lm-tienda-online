@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LM+ - Entregas a Domicilio</title>
+    <style>
+        :root {
+            --primary-color: #FFCC00;
+            --secondary-color: #DA291C;
+            --dark-color: #000000;
+            --light-color: #ffffff;
+            --gray-light: #f8f9fa;
+            --price-color: #FF0000;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--light-color);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            height: 70px;
+            width: auto;
+            border-radius: 8px;
+        }
+        
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            background-color: var(--primary-color);
+            padding: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--dark-color);
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--dark-color);
+        }
+        
+        .free-delivery-badge {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px auto;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .highlight {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        .products-section {
+            padding: 2rem 0;
+            background-color: var(--gray-light);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .product-image-container {
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 1.2rem;
+        }
+        
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            line-height: 1.3;
+            min-height: 2.6rem;
+        }
+        
+        .product-price {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .price-usd {
+            color: var(--price-color);
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .add-to-cart {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #e6b800;
+        }
+        
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .cart-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
+            padding: 2rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+        
+        .cart-items {
+            margin-bottom: 1.5rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-medium);
+        }
+        
+        .item-info {
+            flex-grow: 1;
+        }
+        
+        .item-name {
+            font-weight: bold;
+        }
+        
+        .item-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        
+        .quantity-btn {
+            background: var(--gray-medium);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .quantity-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .quantity {
+            margin: 0 0.5rem;
+            font-weight: bold;
+        }
+        
+        .remove-item {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .cart-total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        
+        .checkout-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #c8231a;
+        }
+        
+        .order-form {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 2rem auto;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray-medium);
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d8d8d8;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c8231a;
+        }
+        
+        .order-confirmation {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .confirmation-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        
+        .whatsapp-notice {
+            background-color: #25D366;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .contact-info {
+            margin: 1rem 0;
+        }
+        
+        .whatsapp-contact {
+            background-color: #25D366;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .product-image-container {
+                height: 250px;
+            }
+            
+            .cart-content {
+                width: 95%;
+                padding: 1rem;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .logo-img {
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo-container">
+                <img src="https://i.ibb.co/zWJwKyfq/logo-LM.png" alt="LM+ Logo" class="logo-img">
+            </div>
+            <div class="cart-icon" id="cartIcon">
+                ? <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>LM+ Entregas a Domicilio</h1>
+            <p>Pide lo que necesites y te lo llevamos a tu puerta. <span class="highlight">Paga solo cuando recibas tu pedido.</span></p>
+            <div class="free-delivery-badge">
+                ? ENTREGA A DOMICILIO TOTALMENTE GRATIS
+            </div>
+        </div>
+    </section>
+
+    <section class="products-section">
+        <div class="container">
+            <h2 class="section-title">Nuestros Productos</h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Los productos se cargar?n aqu? con JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Tu Carrito de Compras</h2>
+                <button class="close-cart" id="closeCart">?</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Los items del carrito se cargar?n aqu? -->
+            </div>
+            <div class="cart-total">
+                Total: <span id="cartTotalUSD">0 USD</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Continuar con el Pedido</button>
+        </div>
+    </div>
+
+    <div class="order-form" id="orderForm">
+        <h2>Informaci?n de Entrega</h2>
+        <form id="deliveryForm">
+            <div class="form-group">
+                <label class="form-label" for="customerName">Nombre Completo *</label>
+                <input type="text" class="form-input" id="customerName" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="customerPhone">Tel?fono *</label>
+                <input type="tel" class="form-input" id="customerPhone" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="customerAddress">Direcci?n de Entrega *</label>
+                <textarea class="form-input" id="customerAddress" rows="3" required placeholder="Incluye puntos de referencia para facilitar la entrega"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="customerNotes">Notas adicionales (opcional)</label>
+                <textarea class="form-input" id="customerNotes" rows="2" placeholder="Indicaciones especiales, horario preferido, etc."></textarea>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" id="backToCartBtn">Volver al Carrito</button>
+                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="order-confirmation" id="orderConfirmation">
+        <div class="confirmation-icon">?</div>
+        <h2>?Pedido Confirmado!</h2>
+        <p>Tu pedido ha sido recibido y est? siendo procesado.</p>
+        <div class="whatsapp-notice">
+            El pedido se ha enviado autom?ticamente a nuestro WhatsApp. Te contactaremos pronto para coordinar la entrega.
+        </div>
+        <p><strong>Recuerda:</strong> El pago se realiza cuando recibas tu pedido.</p>
+        <p><strong>? Entrega a domicilio totalmente gratis</strong></p>
+        <button class="btn btn-primary" id="newOrderBtn">Hacer Otro Pedido</button>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div style="color: white; margin-bottom: 1rem; font-size: 1.5rem; font-weight: bold;">
+                <span style="color: #DA291C;">L</span><span style="color: #FFCC00;">M</span><span style="color: white;">+</span>
+            </div>
+            <div class="contact-info">
+                <p>?Tienes dudas o necesitas ayuda?</p>
+                <a href="https://wa.me/5351273895" class="whatsapp-contact" target="_blank">
+                    Cont?ctanos por WhatsApp
+                </a>
+            </div>
+            <p style="margin-top: 1rem;"><strong>? Entrega a domicilio totalmente gratis</strong></p>
+            <p>&copy; 2023 LM+ Entregas a Domicilio. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Bolsa de 25 panes",
+                image: "https://i.ibb.co/PGRKd5H1/panes.jpg",
+                priceUSD: 5
+            },
+            {
+                id: 2,
+                name: "Bolsa de 1kg de az?car",
+                image: "https://i.ibb.co/ZR6LM5wB/azucar.jpg",
+                priceUSD: 2
+            },
+            {
+                id: 3,
+                name: "Fil de huevos",
+                image: "https://i.ibb.co/dwn8XPWp/huevos.jpg",
+                priceUSD: 9.5
+            },
+            {
+                id: 4,
+                name: "Paquete de pollo 10lb [Encuentro]",
+                image: "https://i.ibb.co/20wtDJ8Y/pollo.jpg",
+                priceUSD: 12
+            },
+            {
+                id: 5,
+                name: "Paquetes de leche 1kg [Capri]",
+                image: "https://i.ibb.co/kgLfSHLt/leche-capri.jpg",
+                priceUSD: 8
+            },
+            {
+                id: 6,
+                name: "Paquetes de leche 1kg [La Cata]",
+                image: "https://i.ibb.co/sptFmg4J/leche-cata.jpg",
+                priceUSD: 8
+            },
+            {
+                id: 7,
+                name: "Paquetes de leche 1kg [Lecherita]",
+                image: "https://i.ibb.co/6J17MyCs/leche-lecherita.jpg",
+                priceUSD: 8
+            },
+            {
+                id: 8,
+                name: "Pomo de aceite 900ml",
+                image: "https://i.ibb.co/nqrNsy3v/aceite.jpg",
+                priceUSD: 3
+            },
+            {
+                id: 9,
+                name: "Cerveza Parranda 330ml",
+                image: "https://i.ibb.co/V6Tpdzc/cerveza.jpg",
+                priceUSD: 0.6
+            }
+        ];
+
+        let cart = [];
+
+        const productsGrid = document.getElementById('productsGrid');
+        const cartIcon = document.getElementById('cartIcon');
+        const cartCount = document.getElementById('cartCount');
+        const cartModal = document.getElementById('cartModal');
+        const closeCart = document.getElementById('closeCart');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotalUSD = document.getElementById('cartTotalUSD');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const orderForm = document.getElementById('orderForm');
+        const deliveryForm = document.getElementById('deliveryForm');
+        const backToCartBtn = document.getElementById('backToCartBtn');
+        const orderConfirmation = document.getElementById('orderConfirmation');
+        const newOrderBtn = document.getElementById('newOrderBtn');
+
+        function loadProducts() {
+            productsGrid.innerHTML = '';
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-image-container">
+                        <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300x300/FFCC00/000000?text=Producto+LM+'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">
+                            <span class="price-usd">${product.priceUSD} USD</span>
+                        </div>
+                        <button class="add-to-cart" data-id="${product.id}">A?adir al Carrito</button>
+                    </div>
+                `;
+                productsGrid.appendChild(productCard);
+            });
+
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    addToCart(productId);
+                });
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    priceUSD: product.priceUSD,
+                    quantity: 1
+                });
+            }
+
+            updateCart();
+            showNotification(`${product.name} a?adido al carrito`);
+        }
+
+        function updateCart() {
+            cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            cartItems.innerHTML = '';
+            let totalUSD = 0;
+
+            cart.forEach(item => {
+                const itemTotalUSD = item.priceUSD * item.quantity;
+                totalUSD += itemTotalUSD;
+
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.priceUSD} USD c/u</div>
+                    </div>
+                    <div class="item-quantity">
+                        <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
+                        <span class="quantity">${item.quantity}</span>
+                        <button class="quantity-btn increase-quantity" data-id="${item.id}">+</button>
+                    </div>
+                    <button class="remove-item" data-id="${item.id}">Eliminar</button>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+
+            document.querySelectorAll('.decrease-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    updateQuantity(productId, -1);
+                });
+            });
+
+            document.querySelectorAll('.increase-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    updateQuantity(productId, 1);
+                });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.getAttribute('data-id'));
+                    removeFromCart(productId);
+                });
+            });
+
+            cartTotalUSD.textContent = `${totalUSD.toFixed(2)} USD`;
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCart();
+                }
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.backgroundColor = 'var(--primary-color)';
+            notification.style.color = 'var(--dark-color)';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            notification.style.fontWeight = 'bold';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        cartIcon.addEventListener('click', () => {
+            cartModal.style.display = 'flex';
+        });
+
+        closeCart.addEventListener('click', () => {
+            cartModal.style.display = 'none';
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                showNotification('Tu carrito est? vac?o');
+                return;
+            }
+            cartModal.style.display = 'none';
+            orderForm.style.display = 'block';
+        });
+
+        backToCartBtn.addEventListener('click', () => {
+            orderForm.style.display = 'none';
+            cartModal.style.display = 'flex';
+        });
+
+        deliveryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const address = document.getElementById('customerAddress').value;
+            const notes = document.getElementById('customerNotes').value;
+            
+            let message = `?NUEVO PEDIDO LM+!%0A%0A`;
+            message += `*Cliente:* ${name}%0A`;
+            message += `*Tel?fono:* ${phone}%0A`;
+            message += `*Direcci?n:* ${address}%0A`;
+            
+            if (notes) {
+                message += `*Notas:* ${notes}%0A`;
+            }
+            
+            message += `%0A*PEDIDO:*%0A`;
+            
+            cart.forEach(item => {
+                message += `- ${item.quantity}x ${item.name}%0A`;
+                message += `  (${item.priceUSD} USD c/u)%0A`;
+            });
+            
+            message += `%0A*TOTAL:* ${document.getElementById('cartTotalUSD').textContent}`;
+            message += `%0A%0A*? ENTREGA A DOMICILIO GRATIS*`;
+            message += `%0A*LM+ ENTREGAS A DOMICILIO*`;
+            
+            window.open(`https://wa.me/5351273895?text=${message}`, '_blank');
+            
+            orderForm.style.display = 'none';
+            orderConfirmation.style.display = 'block';
+        });
+
+        newOrderBtn.addEventListener('click', () => {
+            cart = [];
+            updateCart();
+            deliveryForm.reset();
+            orderConfirmation.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === cartModal) {
+                cartModal.style.display = 'none';
+            }
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
